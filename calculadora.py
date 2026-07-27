@@ -189,22 +189,19 @@ def generar_pdf(datos, inputs):
     pdf.set_text_color(150, 150, 150)
     pdf.cell(0, 10, "Informe generado automaticamente por AgroCalculadora.", align="C")
 
-  # Guardar en archivo temporal
-    import os
     fd, path = tempfile.mkstemp(suffix=".pdf")
-    os.close(fd) # Cerramos el acceso directo para que fpdf lo abra por su cuenta
-    pdf.output(path) # Le pasamos solo la ruta en texto
+    os.close(fd)
+    pdf.output(path)
     return path
 
 # --- 4. INTERFAZ WEB (STREAMLIT) ---
 st.set_page_config(page_title="AgroCalculadora", page_icon="🌾", layout="centered")
+
 st.markdown("""
     <style>
-    /* Fondo principal más limpio */
     .stApp {
         background-color: #f8f9fa;
     }
-    /* Estilo corporativo para los botones principales */
     .stButton>button {
         background-color: #2e7b32;
         color: white;
@@ -218,18 +215,10 @@ st.markdown("""
         background-color: #1b5e20;
         box-shadow: 0 6px 8px rgba(0,0,0,0.2);
     }
-    /* Tarjetas (Contenedores) con sombras */
-    div[data-testid="stForm"], div[data-testid="stVerticalBlock"] > div {
-        background-color: white;
-        padding: 1rem;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    /* Destacar las métricas numéricas */
     div[data-testid="stMetricValue"] {
         color: #2e7b32;
         font-weight: bold;
-        font-size: 2.5rem;
+        font-size: 2rem;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -237,7 +226,6 @@ st.markdown("""
 st.title("🌾 AgroCalculadora Web")
 st.markdown("Tu asistente agronómico para el cálculo preciso de planes de abonado.")
 
-# Pestañas para organizar la interfaz
 tab1, tab2 = st.tabs(["🧮 Calculadora", "📚 Guía Nutricional"])
 
 with tab1:
@@ -275,11 +263,14 @@ with tab1:
         with col_e:
             p_kcl = st.number_input("Cloruro Potásico (€/kg)", value=0.50, step=0.05)
 
+    st.markdown("---")
+
     # Botón principal
     if st.button("🚜 Generar Plan de Abonado", type="primary"):
-        # Validaciones de seguridad para producción
         if rendimiento_sel <= 0:
             st.error("El rendimiento debe ser mayor a 0.")
+        elif rendimiento_sel > 200:
+            st.warning("⚠️ Cuidado: El rendimiento parece demasiado alto. Recuerda introducirlo en TONELADAS por hectárea (t/ha), no en kilos.")
         else:
             with st.spinner("Calculando extracciones y generando informe..."):
                 inputs = {
@@ -287,27 +278,44 @@ with tab1:
                     "n_agua": n_agua, "p_urea": p_urea, "p_super": p_super, "p_kcl": p_kcl, "calc_econ": calc_econ
                 }
                 
-                # Procesamos datos
                 resultados = calcular_necesidades(**inputs)
-                
-                # Generamos PDF
                 pdf_path = generar_pdf(resultados, inputs)
                 
                 st.success("✅ Plan de abonado generado correctamente.")
-st.subheader("📊 Resumen de tu Plan")
-
-# Creamos un panel de 3 columnas para mostrar resultados clave
-col_res1, col_res2, col_res3 = st.columns(3)
-col_res1.metric(label="Nitrógeno (N) Total", value=f"{resultados['n_real']:.1f} kg")
-col_res2.metric(label="Coste Fondo", value=f"{resultados['coste_fondo']:.2f} €")
-col_res3.metric(label="Ahorro por Agua", value=f"{resultados['euros_ahorrados']:.2f} €")
-
-st.markdown("---")
                 
-                # Botón de descarga real del PDF
+                # --- PANEL DE RESULTADOS EN PANTALLA ---
+                st.subheader("📊 1. Necesidades Totales (Nutrientes Puros)")
+                col_n, col_p, col_k = st.columns(3)
+                col_n.metric("Nitrógeno (N)", f"{resultados['n_real']:.1f} kg/ha")
+                col_p.metric("Fósforo (P2O5)", f"{resultados['p_total']:.1f} kg/ha")
+                col_k.metric("Potasio (K2O)", f"{resultados['k_total']:.1f} kg/ha")
+
+                st.subheader("🚜 2. Recomendación de Fertilizantes Comerciales")
+                st.markdown("**Abonado de Fondo (Antes de la siembra):**")
+                col_f1, col_f2, col_f3 = st.columns(3)
+                col_f1.metric("Urea (46%)", f"{resultados['urea_fondo']:.0f} kg/ha")
+                col_f2.metric("Superfosfato (46%)", f"{resultados['superfosfato_fondo']:.0f} kg/ha")
+                col_f3.metric("Cloruro Potásico (60%)", f"{resultados['cloruro_fondo']:.0f} kg/ha")
+
+                st.markdown("**Abonado de Cobertera (Elegir UNA opción):**")
+                col_c1, col_c2 = st.columns(2)
+                col_c1.metric("Opción A: Urea (46%)", f"{resultados['urea_cobertera']:.0f} kg/ha")
+                col_c2.metric("Opción B: NAC (27%)", f"{resultados['nac_cobertera']:.0f} kg/ha")
+
+                if calc_econ:
+                    st.subheader("💰 3. Resumen Económico")
+                    col_e1, col_e2 = st.columns(2)
+                    col_e1.metric("Coste Total (Fondo + Opción A)", f"{resultados['coste_total_a']:.2f} €/ha")
+                    col_e2.metric("Coste Total (Fondo + Opción B)", f"{resultados['coste_total_b']:.2f} €/ha")
+                    
+                    if n_agua > 0:
+                        st.info(f"💧 Ahorro estimado por nitratos del pozo: **{resultados['euros_ahorrados']:.2f} €/ha**")
+
+                st.markdown("---")
+                
                 with open(pdf_path, "rb") as pdf_file:
                     st.download_button(
-                        label="📄 Descargar Informe Técnico (PDF)",
+                        label="📄 Descargar Informe Técnico Completo (PDF)",
                         data=pdf_file,
                         file_name=f"Plan_Abonado_{cultivo_sel}.pdf",
                         mime="application/pdf"
@@ -319,7 +327,7 @@ with tab2:
     cultivo_guia = st.selectbox("Consultar cultivo:", sorted(list(EXTRACCIONES.keys())), key="guia")
     datos_guia = EXTRACCIONES[cultivo_guia]
     
-    col_n, col_p, col_k = st.columns(3)
-    col_n.metric("Nitrógeno (N)", f"{datos_guia['N']} kg")
-    col_p.metric("Fósforo (P2O5)", f"{datos_guia['P']} kg")
-    col_k.metric("Potasio (K2O)", f"{datos_guia['K']} kg")
+    col_gn, col_gp, col_gk = st.columns(3)
+    col_gn.metric("Nitrógeno (N)", f"{datos_guia['N']} kg")
+    col_gp.metric("Fósforo (P2O5)", f"{datos_guia['P']} kg")
+    col_gk.metric("Potasio (K2O)", f"{datos_guia['K']} kg")
