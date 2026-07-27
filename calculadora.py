@@ -189,10 +189,11 @@ def generar_pdf(datos, inputs):
     pdf.set_text_color(150, 150, 150)
     pdf.cell(0, 10, "Informe generado automaticamente por AgroCalculadora.", align="C")
 
-    # Guardar en archivo temporal
+  # Guardar en archivo temporal
+    import os
     fd, path = tempfile.mkstemp(suffix=".pdf")
-    with os.fdopen(fd, 'wb') as f:
-        pdf.output(f)
+    os.close(fd) # Cerramos el acceso directo para que fpdf lo abra por su cuenta
+    pdf.output(path) # Le pasamos solo la ruta en texto
     return path
 
 # --- 4. INTERFAZ WEB (STREAMLIT) ---
