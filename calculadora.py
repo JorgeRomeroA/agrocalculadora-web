@@ -198,6 +198,41 @@ def generar_pdf(datos, inputs):
 
 # --- 4. INTERFAZ WEB (STREAMLIT) ---
 st.set_page_config(page_title="AgroCalculadora", page_icon="🌾", layout="centered")
+st.markdown("""
+    <style>
+    /* Fondo principal más limpio */
+    .stApp {
+        background-color: #f8f9fa;
+    }
+    /* Estilo corporativo para los botones principales */
+    .stButton>button {
+        background-color: #2e7b32;
+        color: white;
+        border-radius: 8px;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+    }
+    .stButton>button:hover {
+        background-color: #1b5e20;
+        box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+    }
+    /* Tarjetas (Contenedores) con sombras */
+    div[data-testid="stForm"], div[data-testid="stVerticalBlock"] > div {
+        background-color: white;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    /* Destacar las métricas numéricas */
+    div[data-testid="stMetricValue"] {
+        color: #2e7b32;
+        font-weight: bold;
+        font-size: 2.5rem;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 st.title("🌾 AgroCalculadora Web")
 st.markdown("Tu asistente agronómico para el cálculo preciso de planes de abonado.")
@@ -258,10 +293,16 @@ with tab1:
                 # Generamos PDF
                 pdf_path = generar_pdf(resultados, inputs)
                 
-                st.success("¡Cálculo completado con éxito!")
-                
-                # Muestra un pequeño resumen en pantalla
-                st.info(f"**Nitrógeno final a aplicar:** {resultados['n_real']:.1f} kg/ha")
+                st.success("✅ Plan de abonado generado correctamente.")
+st.subheader("📊 Resumen de tu Plan")
+
+# Creamos un panel de 3 columnas para mostrar resultados clave
+col_res1, col_res2, col_res3 = st.columns(3)
+col_res1.metric(label="Nitrógeno (N) Total", value=f"{resultados['n_real']:.1f} kg")
+col_res2.metric(label="Coste Fondo", value=f"{resultados['coste_fondo']:.2f} €")
+col_res3.metric(label="Ahorro por Agua", value=f"{resultados['euros_ahorrados']:.2f} €")
+
+st.markdown("---")
                 
                 # Botón de descarga real del PDF
                 with open(pdf_path, "rb") as pdf_file:
