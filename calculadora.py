@@ -156,12 +156,14 @@ st.markdown(
         display: none;
     }
     
+    /* ¡CRUCIAL! Poner el header de Streamlit por encima de nuestra navbar */
     header[data-testid="stHeader"] {
         background: transparent !important;
         box-shadow: none !important;
+        z-index: 999999 !important; 
     }
 
-    /* Ocultar los iconos de Github, Share, Deploy... TODO menos el botón lateral */
+    /* Ocultar SOLO los iconos de Github, Share, Deploy... de la derecha */
     [data-testid="stToolbar"], .stAppDeployButton {
         display: none !important;
     }
@@ -170,15 +172,14 @@ st.markdown(
        2. REUBICAR Y ARREGLAR EL BOTÓN LATERAL
        --------------------------------------------------- */
     [data-testid="stSidebarCollapsedControl"] {
-        z-index: 1000000 !important; /* Para que quede por encima de nuestra navbar */
+        z-index: 1000000 !important; 
         display: flex !important;
-        top: 15px !important; 
-        left: 15px !important;
         background-color: #ffffff !important;
         border: 1px solid #e5e7eb !important;
         border-radius: 6px !important;
-        padding: 4px !important;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+        margin-top: 10px !important;
+        margin-left: 10px !important;
     }
 
     /* Margen superior de la app principal para que no se coma la navbar */
@@ -197,11 +198,11 @@ st.markdown(
         height: 65px;
         background-color: #ffffff;
         border-bottom: 1px solid #e5e7eb;
-        z-index: 99999;
+        z-index: 99990; /* ¡Menor que el stHeader para que no lo tape! */
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 2rem 0 70px; /* 70px de hueco a la izq. para que viva tranquilo el botón nativo */
+        padding: 0 2rem 0 70px; /* Hueco a la izq. para el botón nativo */
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     
@@ -249,12 +250,11 @@ st.markdown(
     section[data-testid="stSidebar"] {
         background-color: #ffffff !important;
         border-right: 1px solid #e5e7eb !important;
-        margin-top: 65px !important; /* Empezar justo debajo de la navbar */
+        margin-top: 65px !important; 
         height: calc(100vh - 65px) !important;
         z-index: 999999;
     }
     
-    /* Forzar fondo blanco en las capas internas del menú de Streamlit */
     section[data-testid="stSidebar"] > div {
         background-color: #ffffff !important;
     }
