@@ -1,6 +1,3 @@
-import os
-import tempfile
-from fpdf import FPDF
 import plotly.graph_objects as go
 import streamlit as st
 
@@ -96,13 +93,147 @@ def calcular_necesidades(
 
 # --- 3. CONFIGURACIÓN DE PÁGINA ---
 st.set_page_config(
-    page_title="Agro SaaS",
+    page_title="AgroSaaS Pro",
     page_icon="🌾",
     layout="wide",
-    initial_sidebar_state="expanded", 
+    initial_sidebar_state="expanded",
 )
 
-# --- 4. BARRA SUPERIOR (NAVBAR) ---
+# --- 4. ESTILOS CSS REESTRUCTURADOS ---
+st.markdown(
+    """
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    /* TIPOGRAFÍA GLOBAL */
+    html, body, [class*="css"], [class*="st-"], p, h1, h2, h3, h4, h5, span, div, label, input, select, button {
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    /* OCULTAR NATIVOS INNECESARIOS */
+    #MainMenu, footer, header[data-testid="stHeader"] {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    
+    [data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* NAVBAR SUPERIOR FIJA */
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background-color: #ffffff;
+        border-bottom: 1px solid #e5e7eb;
+        z-index: 99999;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 2rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .navbar .logo { font-size: 1.25rem; font-weight: 800; color: #111827; letter-spacing: -0.5px; }
+    .navbar .nav-links a { text-decoration: none; color: #6b7280; margin: 0 1rem; font-weight: 500; font-size: 0.9rem; transition: color 0.2s; }
+    .navbar .nav-links a:hover { color: #059669; }
+    .navbar .user-profile { display: flex; align-items: center; gap: 8px; font-weight: 600; color: #374151; font-size: 0.9rem; }
+    .navbar .user-profile img { width: 28px; height: 28px; border-radius: 50%; }
+
+    /* FONDO DE APLICACIÓN */
+    .stApp {
+        background-color: #f8fafc;
+        background-image: radial-gradient(#d1d5db 1px, transparent 1px);
+        background-size: 20px 20px;
+    }
+
+    /* PADDING CONTENIDO PRINCIPAL */
+    .block-container {
+        padding-top: 5rem !important;
+        padding-bottom: 3rem !important;
+    }
+
+    /* BARRA LATERAL NATIVA Y LIMPIA */
+    section[data-testid="stSidebar"] {
+        background-color: #ffffff !important;
+        border-right: 1px solid #e5e7eb !important;
+        padding-top: 1rem !important;
+    }
+
+    [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
+        gap: 0.4rem !important;
+    }
+
+    [data-testid="stSidebar"] hr {
+        margin-top: 0.6rem !important;
+        margin-bottom: 0.6rem !important;
+    }
+
+    [data-testid="stSidebar"] .stMarkdown h3 {
+        color: #111827 !important;
+        font-weight: 700 !important;
+        font-size: 1.1rem !important;
+    }
+
+    [data-testid="stSidebar"] label, 
+    [data-testid="stSidebar"] .stWidgetLabel p {
+        color: #4b5563 !important; 
+        font-weight: 500 !important;
+        font-size: 0.88rem !important;
+    }
+
+    /* INPUTS Y SELECTS */
+    .stSelectbox div[data-baseweb="select"], 
+    .stNumberInput div[data-baseweb="input"] {
+        background-color: #f9fafb !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 6px !important;
+        font-size: 0.9rem !important;
+        color: #1f2937 !important;
+    }
+
+    .stSelectbox div[data-baseweb="select"]:hover, 
+    .stNumberInput div[data-baseweb="input"]:hover {
+        border-color: #059669 !important;
+        box-shadow: 0 0 0 1px #059669 !important;
+    }
+
+    /* BOTÓN VERDE */
+    .stButton>button {
+        background-color: #059669 !important;
+        color: white !important;
+        border-radius: 8px !important;
+        border: none !important;
+        padding: 0.6rem !important;
+        font-weight: 700 !important;
+        font-size: 0.95rem !important;
+        width: 100% !important;
+        box-shadow: 0 4px 6px -1px rgba(5,150,105,0.2) !important;
+        margin-top: 0.5rem !important;
+    }
+
+    .stButton>button:hover {
+        background-color: #047857 !important;
+    }
+
+    /* TARJETAS DE MÉTRICAS */
+    div[data-testid="stMetric"] {
+        background-color: #ffffff;
+        border: 1px solid #e5e7eb;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    </style>
+""",
+    unsafe_allow_html=True,
+)
+
+# --- 5. BARRA SUPERIOR (NAVBAR) ---
 st.markdown(
     """
     <div class="navbar">
@@ -117,176 +248,6 @@ st.markdown(
             <span>Mi Cuenta</span>
         </div>
     </div>
-""",
-    unsafe_allow_html=True,
-)
-
-# --- 5. ESTILOS CSS PERSONALIZADOS ---
-st.markdown(
-    """
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
-    /* FUERZA BRUTA PARA LA TIPOGRAFÍA */
-    *, html, body, [class*="css"], [class*="st-"], p, h1, h2, h3, h4, h5, span, div, label, input, select, button {
-        font-family: 'Inter', sans-serif !important;
-    }
-
-    /* ---------------------------------------------------
-       1. LIMPIEZA TOTAL
-       --------------------------------------------------- */
-    #MainMenu, footer, header[data-testid="stHeader"] {
-        display: none !important;
-        visibility: hidden !important;
-    }
-    
-    [data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] {
-        display: none !important;
-        visibility: hidden !important;
-    }
-
-    /* ---------------------------------------------------
-       2. NUESTRA BARRA PERSONALIZADA
-       --------------------------------------------------- */
-    .navbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 65px;
-        background-color: #ffffff;
-        border-bottom: 1px solid #e5e7eb;
-        z-index: 999900; 
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 2rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    
-    .navbar .logo { font-size: 1.3rem; font-weight: 800; color: #111827; letter-spacing: -0.5px; }
-    .navbar .nav-links a { text-decoration: none; color: #6b7280; margin: 0 1rem; font-weight: 500; font-size: 0.95rem; transition: color 0.2s; }
-    .navbar .nav-links a:hover { color: #059669; }
-    .navbar .user-profile { display: flex; align-items: center; gap: 10px; font-weight: 600; color: #374151; cursor: pointer; }
-    .navbar .user-profile img { width: 32px; height: 32px; border-radius: 50%; }
-
-    /* ---------------------------------------------------
-       3. FONDO GENERAL
-       --------------------------------------------------- */
-    .stApp {
-        background-color: #f8fafc;
-        background-image: radial-gradient(#d1d5db 1px, transparent 1px);
-        background-size: 20px 20px;
-    }
-
-    /* ---------------------------------------------------
-       4. BARRA LATERAL FIJA Y ESPACIADOS COMPACTOS
-       --------------------------------------------------- */
-    section[data-testid="stSidebar"] {
-        background-color: #ffffff !important;
-        border-right: 1px solid #e5e7eb !important;
-        margin-top: 65px !important; 
-        height: calc(100vh - 65px) !important;
-        z-index: 999999 !important; 
-        position: fixed !important;
-        left: 0 !important;
-        transform: translateX(0px) !important;
-        visibility: visible !important;
-        width: 320px !important;
-        min-width: 320px !important;
-    }
-    
-    section[data-testid="stSidebar"] > div {
-        background-color: #ffffff !important;
-    }
-
-    /* REDUCCIÓN DE ESPACIOS (GAPS Y MARGINS) EN LA SIDEBAR */
-    [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
-        gap: 0.4rem !important; /* Estrecha el hueco general entre elementos */
-    }
-    
-    [data-testid="stSidebar"] hr {
-        margin-top: 0.8rem !important;
-        margin-bottom: 0.8rem !important;
-        padding: 0 !important;
-    }
-
-    /* ---------------------------------------------------
-       5. AJUSTAR EL CONTENIDO PRINCIPAL
-       --------------------------------------------------- */
-    .block-container {
-        padding-top: 5.5rem !important; 
-        margin-left: 320px !important; 
-        padding-left: 2rem !important;
-        max-width: calc(100% - 320px) !important; 
-    }
-
-    /* ---------------------------------------------------
-       6. TIPOGRAFÍA Y ESTILOS DE WIDGETS
-       --------------------------------------------------- */
-    [data-testid="stSidebar"] .stMarkdown h3 {
-        color: #111827 !important;
-        font-weight: 700 !important;
-        font-size: 1.15rem !important;
-        letter-spacing: -0.01em !important;
-        margin-bottom: 0 !important;
-        margin-top: 0 !important;
-    }
-
-    [data-testid="stSidebar"] label, 
-    [data-testid="stSidebar"] .stWidgetLabel p {
-        color: #4b5563 !important; 
-        font-weight: 500 !important;
-        font-size: 0.90rem !important;
-        padding-bottom: 2px !important; /* Acercar la etiqueta al input */
-    }
-    
-    .stSelectbox div[data-baseweb="select"], 
-    .stNumberInput div[data-baseweb="input"] {
-        background-color: #f9fafb !important;
-        border: 1px solid #d1d5db !important;
-        border-radius: 6px !important; /* Ligeramente menos curvo, más pro */
-        transition: all 0.2s ease;
-        font-size: 0.92rem !important;
-        color: #1f2937 !important;
-        min-height: 38px !important; /* Reducir altura de las cajas */
-    }
-    
-    .stSelectbox div[data-baseweb="select"]:hover, 
-    .stNumberInput div[data-baseweb="input"]:hover {
-        border-color: #059669 !important;
-        box-shadow: 0 0 0 1px #059669 !important;
-    }
-
-    .stButton>button {
-        background-color: #059669 !important;
-        color: white !important;
-        border-radius: 8px !important;
-        border: none !important;
-        padding: 0.6rem !important;
-        font-weight: 700 !important;
-        font-size: 0.95rem !important;
-        letter-spacing: 0.02em !important;
-        width: 100% !important;
-        box-shadow: 0 4px 6px -1px rgba(5,150,105,0.2) !important;
-        transition: all 0.2s ease !important;
-        margin-top: 0.5rem !important;
-    }
-    
-    .stButton>button:hover {
-        background-color: #047857 !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 8px -1px rgba(5,150,105,0.3) !important;
-    }
-
-    div[data-testid="stMetric"] {
-        background-color: #ffffff;
-        border: 1px solid #e5e7eb;
-        padding: 1.2rem;
-        border-radius: 12px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
-    </style>
 """,
     unsafe_allow_html=True,
 )
@@ -342,59 +303,75 @@ if generar_btn:
         }
         res = calcular_necesidades(**inputs)
 
-        st.markdown(f"## 📊 Informe Agronómico: **{cultivo_sel}**")
+        # Encabezado del Informe
+        st.markdown(f"# 📊 Informe Agronómico: **{cultivo_sel}**")
         st.caption(
-            f"Objetivo de producción: {rendimiento_sel} t/ha | Sistema: {sistema_sel}"
+            f"Objetivo de producción: **{rendimiento_sel} t/ha** | Sistema: **{sistema_sel}**"
         )
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.divider()
 
-        col_chart, col_metrics = st.columns([1, 2])
+        # Requerimiento Puro
+        st.markdown("### 🧬 Requerimiento Puro Necesario (kg/ha)")
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Nitrógeno (N)", f"{res['n_real']:.1f} kg/ha")
+        c2.metric("Fósforo (P₂O₅)", f"{res['p_total']:.1f} kg/ha")
+        c3.metric("Potasio (K₂O)", f"{res['k_total']:.1f} kg/ha")
+
+        st.divider()
+
+        # Balance visual y Módulo Económico
+        col_chart, col_econ = st.columns([1, 1])
 
         with col_chart:
             fig = go.Figure(
                 data=[
                     go.Pie(
-                        labels=[
-                            "Nitrógeno (N)",
-                            "Fósforo (P)",
-                            "Potasio (K)",
-                        ],
+                        labels=["Nitrógeno (N)", "Fósforo (P)", "Potasio (K)"],
                         values=[res["n_real"], res["p_total"], res["k_total"]],
                         hole=0.5,
-                        marker=dict(
-                            colors=["#059669", "#d97706", "#dc2626"]
-                        ),
+                        marker=dict(colors=["#059669", "#d97706", "#dc2626"]),
                     )
                 ]
             )
             fig.update_layout(
-                title_text="Balance N-P-K",
+                title_text="Balance N-P-K Exigido",
                 margin=dict(t=40, b=0, l=0, r=0),
-                height=280,
+                height=260,
             )
             st.plotly_chart(fig, use_container_width=True)
 
-        with col_metrics:
-            st.markdown("### Requerimiento Puro (kg/ha)")
-            c1, c2, c3 = st.columns(3)
-            c1.metric("Nitrógeno (N)", f"{res['n_real']:.1f}")
-            c2.metric("Fósforo (P₂O₅)", f"{res['p_total']:.1f}")
-            c3.metric("Potasio (K₂O)", f"{res['k_total']:.1f}")
+        with col_econ:
+            if calc_econ:
+                st.markdown("### 💰 Resumen Financiero Estimado")
+                st.metric("Coste Fondo (Fertilización Inicial)", f"{res['coste_fondo']:.2f} €/ha")
+                st.metric("Coste Total Opción A (Urea)", f"{res['coste_total_a']:.2f} €/ha")
+                if res["euros_ahorrados"] > 0:
+                    st.success(f"🌱 **Ahorro por Nitratos en Agua:** {res['euros_ahorrados']:.2f} €/ha")
 
-        st.markdown("<br><hr><br>", unsafe_allow_html=True)
-        st.markdown("### 🚜 Prescripción Comercial (Sacos a aplicar)")
+        st.divider()
+
+        # Prescripción Fondo
+        st.markdown("### 🚜 Prescripción Comercial: Abonado de Fondo")
         cf1, cf2, cf3 = st.columns(3)
         cf1.metric("Urea (46%)", f"{res['urea_fondo']:.0f} kg/ha")
         cf2.metric("Superfosfato (46%)", f"{res['superfosfato_fondo']:.0f} kg/ha")
         cf3.metric("Cloruro Potásico (60%)", f"{res['cloruro_fondo']:.0f} kg/ha")
 
+        st.divider()
+
+        # Prescripción Cobertera
+        st.markdown("### 🌿 Prescripción Comercial: Abonado de Cobertera")
+        cob1, cob2 = st.columns(2)
+        cob1.metric("Opción A: Urea (46%)", f"{res['urea_cobertera']:.0f} kg/ha")
+        cob2.metric("Opción B: NAC (27%)", f"{res['nac_cobertera']:.0f} kg/ha")
+
 else:
-    st.markdown("<br><br><br>", unsafe_allow_html=True)
+    st.markdown("<br><br>", unsafe_allow_html=True)
     st.markdown(
         "<h1 style='text-align: center; color: #111827;'>🚜 Bienvenido a tu Panel Agronómico</h1>",
         unsafe_allow_html=True,
     )
     st.markdown(
-        "<p style='text-align: center; color: #6b7280; font-size: 1.1rem;'>Configura los parámetros en el menú lateral para empezar.</p>",
+        "<p style='text-align: center; color: #6b7280; font-size: 1.1rem;'>Ajusta los parámetros en la barra lateral de la izquierda y haz clic en <b>GENERAR REPORTE</b> para calcular la prescripción nutricional.</p>",
         unsafe_allow_html=True,
     )
