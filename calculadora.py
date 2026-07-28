@@ -156,30 +156,37 @@ st.markdown(
         display: none;
     }
     
-    /* ¡CRUCIAL! Poner el header de Streamlit por encima de nuestra navbar */
+    /* Ocultar SOLO los botones de la derecha (GitHub, Deploy, etc) */
+    [data-testid="stToolbar"], .stAppDeployButton {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* ---------------------------------------------------
+       2. HEADER NATIVO ("CRISTAL INVISIBLE")
+       --------------------------------------------------- */
     header[data-testid="stHeader"] {
         background: transparent !important;
         box-shadow: none !important;
         z-index: 999999 !important; 
-    }
-
-    /* Ocultar SOLO los iconos de Github, Share, Deploy... de la derecha */
-    [data-testid="stToolbar"], .stAppDeployButton {
-        display: none !important;
+        pointer-events: none !important; /* TRUCO: Deja pasar los clics hacia abajo */
     }
 
     /* ---------------------------------------------------
-       2. REUBICAR Y ARREGLAR EL BOTÓN LATERAL
+       3. REUBICAR Y FORZAR LA APARICIÓN DEL BOTÓN LATERAL
        --------------------------------------------------- */
-    [data-testid="stSidebarCollapsedControl"] {
-        z-index: 1000000 !important; 
-        display: flex !important;
+    [data-testid="collapsedControl"], [data-testid="stSidebarCollapsedControl"] {
+        pointer-events: auto !important; /* Habilitar clic específicamente para el botón */
         background-color: #ffffff !important;
         border: 1px solid #e5e7eb !important;
-        border-radius: 6px !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
-        margin-top: 10px !important;
-        margin-left: 10px !important;
+        border-radius: 8px !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
+        margin-top: 12px !important;
+        margin-left: 15px !important;
+        z-index: 1000000 !important; 
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
 
     /* Margen superior de la app principal para que no se coma la navbar */
@@ -188,7 +195,7 @@ st.markdown(
     }
 
     /* ---------------------------------------------------
-       3. NUESTRA NAVBAR PERSONALIZADA
+       4. NUESTRA NAVBAR PERSONALIZADA
        --------------------------------------------------- */
     .navbar {
         position: fixed;
@@ -198,12 +205,13 @@ st.markdown(
         height: 65px;
         background-color: #ffffff;
         border-bottom: 1px solid #e5e7eb;
-        z-index: 99990; /* ¡Menor que el stHeader para que no lo tape! */
+        z-index: 99990; /* Por debajo del header invisible pero encima de lo demás */
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 2rem 0 70px; /* Hueco a la izq. para el botón nativo */
+        padding: 0 2rem 0 80px; /* Hueco de 80px a la izq. para que quepa el botón nativo de Streamlit */
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        pointer-events: auto; /* Reactivar clics en nuestra barra */
     }
     
     .navbar .logo {
@@ -245,7 +253,7 @@ st.markdown(
     }
 
     /* ---------------------------------------------------
-       4. ESTILOS DE LA BARRA LATERAL Y SU FONDO
+       5. ESTILOS DE LA BARRA LATERAL Y SU FONDO
        --------------------------------------------------- */
     section[data-testid="stSidebar"] {
         background-color: #ffffff !important;
