@@ -94,13 +94,12 @@ def calcular_necesidades(
 
     return resultados
 
-
 # --- 3. CONFIGURACIÓN DE PÁGINA ---
 st.set_page_config(
     page_title="Agro SaaS",
     page_icon="🌾",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="expanded", # Forzamos que se inicie expandida
 )
 
 # --- 4. BARRA SUPERIOR (NAVBAR) ---
@@ -133,40 +132,21 @@ st.markdown(
     }
 
     /* ---------------------------------------------------
-       1. LIMPIEZA DE MENÚS MOLESTOS DE STREAMLIT
+       1. ELIMINAR CUALQUIER RASTRO DEL HEADER Y BOTONES DE STREAMLIT
        --------------------------------------------------- */
-    #MainMenu, footer {
-        visibility: hidden; 
-        display: none;
+    #MainMenu, footer, header[data-testid="stHeader"] {
+        display: none !important;
+        visibility: hidden !important;
     }
     
-    /* Ocultar las herramientas derechas (Deploy, GitHub) */
-    [data-testid="stToolbar"], .stAppDeployButton {
+    /* Ocultar botones de cerrar/abrir la barra lateral */
+    [data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] {
         display: none !important;
         visibility: hidden !important;
     }
 
     /* ---------------------------------------------------
-       2. EL TRUCO MAESTRO: HEADER NATIVO INVISIBLE Y CLICKABLE
-       --------------------------------------------------- */
-    header[data-testid="stHeader"] {
-        background: transparent !important;
-        box-shadow: none !important;
-        z-index: 999999 !important; /* Capa más alta */
-        pointer-events: none !important; /* Traspasar clicks hacia abajo... */
-    }
-
-    /* ...PERO permitir clicks ÚNICAMENTE en el botón de la barra nativo */
-    header[data-testid="stHeader"] button {
-        pointer-events: auto !important; 
-        background-color: #ffffff !important;
-        border: 1px solid #e5e7eb !important;
-        border-radius: 8px !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
-    }
-
-    /* ---------------------------------------------------
-       3. NUESTRA BARRA PERSONALIZADA (POR DEBAJO DEL HEADER)
+       2. NUESTRA BARRA PERSONALIZADA (AHORA LIMPIA)
        --------------------------------------------------- */
     .navbar {
         position: fixed;
@@ -176,11 +156,11 @@ st.markdown(
         height: 65px;
         background-color: #ffffff;
         border-bottom: 1px solid #e5e7eb;
-        z-index: 999900; /* Nivel intermedio: debajo del header, encima de la app */
+        z-index: 999900; 
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 2rem 0 80px; /* HUECO de 80px a la izquierda para el botón nativo */
+        padding: 0 2rem; /* Ya no hace falta el hueco de 80px */
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     
@@ -228,14 +208,14 @@ st.markdown(
     }
 
     /* ---------------------------------------------------
-       4. BARRA LATERAL CON FONDO SÓLIDO (ARREGLADO)
+       3. BARRA LATERAL FIJA Y SIN BOTÓN
        --------------------------------------------------- */
     section[data-testid="stSidebar"] {
         background-color: #ffffff !important;
         border-right: 1px solid #e5e7eb !important;
         margin-top: 65px !important; 
         height: calc(100vh - 65px) !important;
-        z-index: 9999999 !important; /* Sobreponerse a todo al desplegarse */
+        z-index: 999999 !important; 
     }
     
     section[data-testid="stSidebar"] > div {
