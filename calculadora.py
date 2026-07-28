@@ -194,156 +194,168 @@ def generar_pdf(datos, inputs):
     pdf.output(path)
     return path
 
-# --- 4. INTERFAZ WEB (STREAMLIT) ---
-st.set_page_config(page_title="AgroCalculadora", page_icon="🌾", layout="centered")
+# --- 4. INTERFAZ WEB PROFESIONAL (STREAMLIT) ---
+st.set_page_config(page_title="AgroCalculadora Pro", page_icon="🌾", layout="wide")
 
+# CSS Agresivo para matar el diseño por defecto de Streamlit
 st.markdown("""
     <style>
-    .stApp {
-        background-color: #f4f6f8;
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
+    
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
     }
+    
+    /* Estilo de Sidebar */
+    [data-testid="stSidebar"] {
+        background-color: #f0f2f6;
+        border-right: 1px solid #e0e0e0;
+    }
+    
+    /* Botón Primario */
     .stButton>button {
         background-color: #2e7b32;
         color: white;
-        border-radius: 8px;
+        border-radius: 6px;
         border: none;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        padding: 0.6rem 1.2rem;
-        transition: all 0.3s ease;
-        font-weight: bold;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        font-size: 1.1rem;
         width: 100%;
+        transition: all 0.2s ease;
     }
     .stButton>button:hover {
         background-color: #1b5e20;
-        box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        transform: translateY(-1px);
+    }
+    
+    /* Estilos para las Métricas (Tarjetas de resultados) */
+    div[data-testid="stMetric"] {
+        background-color: white;
+        border: 1px solid #e0e0e0;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     div[data-testid="stMetricValue"] {
         color: #2e7b32;
-        font-weight: bold;
-        font-size: 2rem;
+        font-weight: 800;
+        font-size: 1.8rem;
+    }
+    div[data-testid="stMetricLabel"] {
+        font-size: 1rem;
+        color: #555;
+        font-weight: 600;
     }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🌾 AgroCalculadora Web")
-st.markdown("Tu asistente agronómico para el cálculo preciso de planes de abonado.")
-st.markdown("---")
-
-tab1, tab2 = st.tabs(["🧮 Calculadora", "📚 Guía Nutricional"])
-
-with tab1:
+# --- SIDEBAR: PANEL DE CONTROL ---
+with st.sidebar:
+    st.image("https://cdn-icons-png.flaticon.com/512/3000/3000962.png", width=60) # Ícono genérico bonito
+    st.title("Configuración")
+    st.markdown("Ajusta los parámetros para generar tu plan.")
+    st.divider()
     
-    # CONTENEDOR 1: Configuración Principal
-    with st.container(border=True):
-        st.subheader("🌱 Configuración del Cultivo")
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            cultivo_sel = st.selectbox("Selecciona el cultivo:", sorted(list(EXTRACCIONES.keys())))
-        with col2:
-            rendimiento_sel = st.number_input("Rendimiento esperado (t/ha):", min_value=0.1, value=5.0, step=0.5)
-        with col3:
-            # Cambiado de radio a selectbox para que quede alineado con los otros dos inputs
-            sistema_sel = st.selectbox("Sistema de cultivo:", ["Secano", "Regadío"])
-
-    # CONTENEDOR 2: Agua de riego (Sólo aparece si es regadío)
+    st.subheader("🌱 Datos del Cultivo")
+    cultivo_sel = st.selectbox("Selecciona el cultivo:", sorted(list(EXTRACCIONES.keys())))
+    rendimiento_sel = st.number_input("Rendimiento (t/ha):", min_value=0.1, value=5.0, step=0.5)
+    sistema_sel = st.selectbox("Sistema:", ["Secano", "Regadío"])
+    
     n_agua = 0.0
     if sistema_sel == "Regadío":
-        with st.container(border=True):
-            st.subheader("💧 Aporte por Agua de Riego")
-            st.caption("Si riegas con pozo, introduce los datos para descontar nitratos:")
-            col_a, col_b = st.columns(2)
-            with col_a:
-                ppm_agua = st.number_input("Nitratos (ppm):", min_value=0.0, value=0.0, step=1.0)
-            with col_b:
-                m3_agua = st.number_input("Volumen a regar (m³/ha):", min_value=0.0, value=0.0, step=100.0)
-            n_agua = (ppm_agua * m3_agua / 1000) * 0.2258
+        st.markdown("**💧 Agua de Riego (Pozo)**")
+        ppm_agua = st.number_input("Nitratos (ppm):", min_value=0.0, value=0.0, step=1.0)
+        m3_agua = st.number_input("Volumen (m³/ha):", min_value=0.0, value=0.0, step=100.0)
+        n_agua = (ppm_agua * m3_agua / 1000) * 0.2258
 
-    # CONTENEDOR 3: Simulador Económico
-    with st.container(border=True):
-        st.subheader("💰 Simulador Económico")
-        # Usamos toggle (interruptor moderno) en lugar de checkbox
-        calc_econ = st.toggle("Activar simulación de costes", value=True)
+    st.divider()
+    
+    st.subheader("💰 Mercado (Precios)")
+    calc_econ = st.toggle("Activar módulo económico", value=True)
+    p_urea, p_super, p_kcl = 0.45, 0.40, 0.50
+    if calc_econ:
+        p_urea = st.number_input("Urea (€/kg)", value=0.45, step=0.05)
+        p_super = st.number_input("Superfosfato (€/kg)", value=0.40, step=0.05)
+        p_kcl = st.number_input("Cloruro Potásico (€/kg)", value=0.50, step=0.05)
         
-        p_urea, p_super, p_kcl = 0.45, 0.40, 0.50
-        if calc_econ:
-            col_c, col_d, col_e = st.columns(3)
-            with col_c:
-                p_urea = st.number_input("Precio Urea (€/kg)", value=0.45, step=0.05)
-            with col_d:
-                p_super = st.number_input("Precio Superfosfato (€/kg)", value=0.40, step=0.05)
-            with col_e:
-                p_kcl = st.number_input("Precio Cloruro Potásico (€/kg)", value=0.50, step=0.05)
+    st.divider()
+    generar_btn = st.button("🚜 CALCULAR PLAN", type="primary", use_container_width=True)
 
-    st.markdown("<br>", unsafe_allow_html=True) # Espacio extra para respirar
+# --- ÁREA PRINCIPAL (MAIN DASHBOARD) ---
+st.title("🌾 AgroCalculadora Dashboard")
+st.markdown("Bienvenido a tu suite de gestión agronómica. Ajusta los parámetros en el **panel lateral izquierdo** para comenzar.")
 
-    # BOTÓN PRINCIPAL
-    if st.button("🚜 GENERAR PLAN DE ABONADO", type="primary"):
-        if rendimiento_sel <= 0:
-            st.error("El rendimiento debe ser mayor a 0.")
-        elif rendimiento_sel > 200:
-            st.warning("⚠️ Cuidado: El rendimiento parece demasiado alto. Recuerda introducirlo en TONELADAS por hectárea (t/ha), no en kilos.")
-        else:
-            with st.spinner("Calculando extracciones y generando informe..."):
-                inputs = {
-                    "cultivo": cultivo_sel, "rendimiento": rendimiento_sel, "sistema": sistema_sel.lower(),
-                    "n_agua": n_agua, "p_urea": p_urea, "p_super": p_super, "p_kcl": p_kcl, "calc_econ": calc_econ
-                }
+if generar_btn:
+    if rendimiento_sel <= 0:
+        st.error("El rendimiento debe ser mayor a 0.")
+    elif rendimiento_sel > 200:
+        st.warning("⚠️ Cuidado: El rendimiento parece demasiado alto. Recuerda introducirlo en TONELADAS por hectárea.")
+    else:
+        with st.spinner("Procesando algoritmo nutricional..."):
+            inputs = {
+                "cultivo": cultivo_sel, "rendimiento": rendimiento_sel, "sistema": sistema_sel.lower(),
+                "n_agua": n_agua, "p_urea": p_urea, "p_super": p_super, "p_kcl": p_kcl, "calc_econ": calc_econ
+            }
+            
+            resultados = calcular_necesidades(**inputs)
+            pdf_path = generar_pdf(resultados, inputs)
+            
+            # Pestañas para organizar la información limpia
+            tab_res, tab_guia = st.tabs(["📊 Resultados del Plan", "📚 Guía de Extracciones"])
+            
+            with tab_res:
+                st.success(f"✅ Plan optimizado para **{cultivo_sel}** a **{rendimiento_sel} t/ha**.")
                 
-                resultados = calcular_necesidades(**inputs)
-                pdf_path = generar_pdf(resultados, inputs)
-                
-                st.success("✅ Plan de abonado generado correctamente.")
-                
-                # --- PANEL DE RESULTADOS VISUALMENTE AGRUPADO ---
-                with st.container(border=True):
-                    st.subheader("📊 1. Necesidades Totales (Nutrientes Puros)")
-                    col_n, col_p, col_k = st.columns(3)
-                    col_n.metric("Nitrógeno (N)", f"{resultados['n_real']:.1f} kg/ha")
-                    col_p.metric("Fósforo (P2O5)", f"{resultados['p_total']:.1f} kg/ha")
-                    col_k.metric("Potasio (K2O)", f"{resultados['k_total']:.1f} kg/ha")
+                st.subheader("1. Requerimientos Totales (Nutrientes Puros)")
+                c1, c2, c3 = st.columns(3)
+                c1.metric("Nitrógeno (N)", f"{resultados['n_real']:.1f} kg/ha")
+                c2.metric("Fósforo (P2O5)", f"{resultados['p_total']:.1f} kg/ha")
+                c3.metric("Potasio (K2O)", f"{resultados['k_total']:.1f} kg/ha")
 
-                with st.container(border=True):
-                    st.subheader("🚜 2. Recomendación de Fertilizantes Comerciales")
-                    st.markdown("**Abonado de Fondo (Antes de la siembra):**")
-                    col_f1, col_f2, col_f3 = st.columns(3)
-                    col_f1.metric("Urea (46%)", f"{resultados['urea_fondo']:.0f} kg/ha")
-                    col_f2.metric("Superfosfato (46%)", f"{resultados['superfosfato_fondo']:.0f} kg/ha")
-                    col_f3.metric("Cloruro Potásico (60%)", f"{resultados['cloruro_fondo']:.0f} kg/ha")
+                st.markdown("<br>", unsafe_allow_html=True)
+                
+                st.subheader("2. Dosis Comerciales Recomendadas")
+                st.caption("Abonado de Fondo (Antes de la siembra)")
+                cf1, cf2, cf3 = st.columns(3)
+                cf1.metric("Urea (46%)", f"{resultados['urea_fondo']:.0f} kg/ha")
+                cf2.metric("Superfosfato (46%)", f"{resultados['superfosfato_fondo']:.0f} kg/ha")
+                cf3.metric("Cloruro Potásico (60%)", f"{resultados['cloruro_fondo']:.0f} kg/ha")
 
-                    st.markdown("**Abonado de Cobertera (Elegir UNA opción):**")
-                    col_c1, col_c2 = st.columns(2)
-                    col_c1.metric("Opción A: Urea (46%)", f"{resultados['urea_cobertera']:.0f} kg/ha")
-                    col_c2.metric("Opción B: NAC (27%)", f"{resultados['nac_cobertera']:.0f} kg/ha")
+                st.caption("Abonado de Cobertera (Elige una vía)")
+                cc1, cc2 = st.columns(2)
+                cc1.metric("Vía A: Urea (46%)", f"{resultados['urea_cobertera']:.0f} kg/ha")
+                cc2.metric("Vía B: NAC (27%)", f"{resultados['nac_cobertera']:.0f} kg/ha")
 
                 if calc_econ:
-                    with st.container(border=True):
-                        st.subheader("💰 3. Resumen Económico")
-                        col_e1, col_e2 = st.columns(2)
-                        col_e1.metric("Coste Total (Fondo + Opción A)", f"{resultados['coste_total_a']:.2f} €/ha")
-                        col_e2.metric("Coste Total (Fondo + Opción B)", f"{resultados['coste_total_b']:.2f} €/ha")
-                        
-                        if n_agua > 0:
-                            st.info(f"💧 Ahorro estimado por nitratos del pozo: **{resultados['euros_ahorrados']:.2f} €/ha**")
+                    st.markdown("---")
+                    st.subheader("3. Impacto Económico Estimado")
+                    ce1, ce2 = st.columns(2)
+                    ce1.metric("Coste Total (Fondo + Vía A)", f"{resultados['coste_total_a']:.2f} €/ha")
+                    ce2.metric("Coste Total (Fondo + Vía B)", f"{resultados['coste_total_b']:.2f} €/ha")
+                    
+                    if n_agua > 0:
+                        st.info(f"💧 Has ahorrado **{resultados['euros_ahorrados']:.2f} €/ha** gracias al nitrato natural de tu pozo de riego.")
 
-                st.markdown("---")
-                
+                st.markdown("<br>", unsafe_allow_html=True)
                 with open(pdf_path, "rb") as pdf_file:
                     st.download_button(
-                        label="📄 Descargar Informe Técnico Completo (PDF)",
+                        label="📄 Descargar Informe PDF Oficial",
                         data=pdf_file,
                         file_name=f"Plan_Abonado_{cultivo_sel}.pdf",
-                        mime="application/pdf"
+                        mime="application/pdf",
+                        use_container_width=True
                     )
 
-with tab2:
-    with st.container(border=True):
-        st.subheader("📚 Extracciones Teóricas")
-        st.markdown("Revisa las necesidades en kg por cada tonelada producida:")
-        cultivo_guia = st.selectbox("Consultar cultivo:", sorted(list(EXTRACCIONES.keys())), key="guia")
-        datos_guia = EXTRACCIONES[cultivo_guia]
-        
-        col_gn, col_gp, col_gk = st.columns(3)
-        col_gn.metric("Nitrógeno (N)", f"{datos_guia['N']} kg")
-        col_gp.metric("Fósforo (P2O5)", f"{datos_guia['P']} kg")
-        col_gk.metric("Potasio (K2O)", f"{datos_guia['K']} kg")
+            with tab_guia:
+                st.info(f"Mostrando extracciones base para: **{cultivo_sel}**")
+                datos_guia = EXTRACCIONES[cultivo_sel]
+                cg1, cg2, cg3 = st.columns(3)
+                cg1.metric("Nitrógeno Base", f"{datos_guia['N']} kg/t")
+                cg2.metric("Fósforo Base", f"{datos_guia['P']} kg/t")
+                cg3.metric("Potasio Base", f"{datos_guia['K']} kg/t")
