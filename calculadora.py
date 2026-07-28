@@ -179,7 +179,7 @@ st.markdown(
     }
 
     /* ---------------------------------------------------
-       4. BARRA LATERAL FIJA Y FORZADA (EL TRUCO ANTI-CACHÉ)
+       4. BARRA LATERAL FIJA Y FORZADA
        --------------------------------------------------- */
     section[data-testid="stSidebar"] {
         background-color: #ffffff !important;
@@ -187,7 +187,6 @@ st.markdown(
         margin-top: 65px !important; 
         height: calc(100vh - 65px) !important;
         z-index: 999999 !important; 
-        /* Obligamos a que la barra se ancle y sea visible, ignorando el estado oculto de Streamlit */
         position: fixed !important;
         left: 0 !important;
         transform: translateX(0px) !important;
@@ -205,22 +204,42 @@ st.markdown(
        --------------------------------------------------- */
     .block-container {
         padding-top: 5.5rem !important; 
-        margin-left: 320px !important; /* Desplazamos la app a la derecha para hacerle el hueco a la barra */
+        margin-left: 320px !important; 
         padding-left: 2rem !important;
         max-width: calc(100% - 320px) !important; 
     }
 
     /* ---------------------------------------------------
-       6. ESTILOS DE ELEMENTOS
+       6. TIPOGRAFÍA Y ESTILOS DE LA BARRA LATERAL (MEJORADO)
        --------------------------------------------------- */
-    [data-testid="stSidebar"] label { color: #374151 !important; font-weight: 600 !important; font-size: 0.88rem !important; }
     
+    /* Títulos dentro de la barra lateral */
+    [data-testid="stSidebar"] .stMarkdown h3 {
+        color: #111827 !important;
+        font-weight: 700 !important;
+        font-size: 1.15rem !important;
+        letter-spacing: -0.01em !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    /* Etiquetas de los selectores (Labels) */
+    [data-testid="stSidebar"] label, 
+    [data-testid="stSidebar"] .stWidgetLabel p {
+        color: #4b5563 !important; /* Gris elegante */
+        font-weight: 500 !important;
+        font-size: 0.92rem !important;
+    }
+    
+    /* Cajas de texto y selectores */
     .stSelectbox div[data-baseweb="select"], 
     .stNumberInput div[data-baseweb="input"] {
         background-color: #f9fafb !important;
         border: 1px solid #d1d5db !important;
         border-radius: 8px !important;
         transition: all 0.2s ease;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 0.95rem !important;
+        color: #1f2937 !important;
     }
     
     .stSelectbox div[data-baseweb="select"]:hover, 
@@ -229,22 +248,28 @@ st.markdown(
         box-shadow: 0 0 0 1px #059669 !important;
     }
 
+    /* Botón verde principal */
     .stButton>button {
         background-color: #059669 !important;
         color: white !important;
         border-radius: 8px !important;
         border: none !important;
-        padding: 0.75rem !important;
+        padding: 0.85rem !important;
         font-weight: 700 !important;
+        font-size: 1rem !important;
+        letter-spacing: 0.02em !important;
         width: 100% !important;
         box-shadow: 0 4px 6px -1px rgba(5,150,105,0.2) !important;
+        transition: all 0.2s ease !important;
     }
     
     .stButton>button:hover {
         background-color: #047857 !important;
-        transform: translateY(-1px) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 8px -1px rgba(5,150,105,0.3) !important;
     }
 
+    /* Cajas de métricas del panel principal */
     div[data-testid="stMetric"] {
         background-color: #ffffff;
         border: 1px solid #e5e7eb;
