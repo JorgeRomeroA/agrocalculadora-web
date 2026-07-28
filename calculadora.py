@@ -37,7 +37,6 @@ EXTRACCIONES = {
     "Zanahoria": {"N": 4.0, "P": 1.1, "K": 6.0},
 }
 
-
 # --- 2. LÓGICA DE CÁLCULO ---
 def calcular_necesidades(
     cultivo, rendimiento, sistema, n_agua, p_urea, p_super, p_kcl, calc_econ
@@ -96,21 +95,6 @@ def calcular_necesidades(
     return resultados
 
 
-def generar_pdf(datos, inputs):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_fill_color(34, 139, 34)
-    pdf.set_text_color(255, 255, 255)
-    pdf.set_font("Helvetica", "B", 16)
-    pdf.cell(
-        0, 15, " AGROCALCULADORA - INFORME", border=0, ln=1, align="C", fill=True
-    )
-    fd, path = tempfile.mkstemp(suffix=".pdf")
-    os.close(fd)
-    pdf.output(path)
-    return path
-
-
 # --- 3. CONFIGURACIÓN DE PÁGINA ---
 st.set_page_config(
     page_title="Agro SaaS",
@@ -149,53 +133,40 @@ st.markdown(
     }
 
     /* ---------------------------------------------------
-       1. LIMPIEZA DE STREAMLIT (ELIMINAR BARRA MOLESTA)
+       1. LIMPIEZA DE MENÚS MOLESTOS DE STREAMLIT
        --------------------------------------------------- */
     #MainMenu, footer {
         visibility: hidden; 
         display: none;
     }
     
-    /* Ocultar SOLO los botones de la derecha (GitHub, Deploy, etc) */
+    /* Ocultar las herramientas derechas (Deploy, GitHub) */
     [data-testid="stToolbar"], .stAppDeployButton {
         display: none !important;
         visibility: hidden !important;
     }
 
     /* ---------------------------------------------------
-       2. HEADER NATIVO ("CRISTAL INVISIBLE")
+       2. EL TRUCO MAESTRO: HEADER NATIVO INVISIBLE Y CLICKABLE
        --------------------------------------------------- */
     header[data-testid="stHeader"] {
         background: transparent !important;
         box-shadow: none !important;
-        z-index: 999999 !important; 
-        pointer-events: none !important; /* TRUCO: Deja pasar los clics hacia abajo */
+        z-index: 999999 !important; /* Capa más alta */
+        pointer-events: none !important; /* Traspasar clicks hacia abajo... */
     }
 
-    /* ---------------------------------------------------
-       3. REUBICAR Y FORZAR LA APARICIÓN DEL BOTÓN LATERAL
-       --------------------------------------------------- */
-    [data-testid="collapsedControl"], [data-testid="stSidebarCollapsedControl"] {
-        pointer-events: auto !important; /* Habilitar clic específicamente para el botón */
+    /* ...PERO permitir clicks ÚNICAMENTE en el botón de la barra nativo */
+    header[data-testid="stHeader"] button {
+        pointer-events: auto !important; 
         background-color: #ffffff !important;
         border: 1px solid #e5e7eb !important;
         border-radius: 8px !important;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
-        margin-top: 12px !important;
-        margin-left: 15px !important;
-        z-index: 1000000 !important; 
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-
-    /* Margen superior de la app principal para que no se coma la navbar */
-    .block-container {
-        padding-top: 5.5rem !important; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
     }
 
     /* ---------------------------------------------------
-       4. NUESTRA NAVBAR PERSONALIZADA
+       3. NUESTRA BARRA PERSONALIZADA (POR DEBAJO DEL HEADER)
        --------------------------------------------------- */
     .navbar {
         position: fixed;
@@ -205,13 +176,12 @@ st.markdown(
         height: 65px;
         background-color: #ffffff;
         border-bottom: 1px solid #e5e7eb;
-        z-index: 99990; /* Por debajo del header invisible pero encima de lo demás */
+        z-index: 999900; /* Nivel intermedio: debajo del header, encima de la app */
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 2rem 0 80px; /* Hueco de 80px a la izq. para que quepa el botón nativo de Streamlit */
+        padding: 0 2rem 0 80px; /* HUECO de 80px a la izquierda para el botón nativo */
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        pointer-events: auto; /* Reactivar clics en nuestra barra */
     }
     
     .navbar .logo {
@@ -245,6 +215,11 @@ st.markdown(
         border-radius: 50%;
     }
 
+    /* Ajuste para que la app no quede tapada por la barra */
+    .block-container {
+        padding-top: 5.5rem !important; 
+    }
+
     /* Fondo general del dashboard */
     .stApp {
         background-color: #f8fafc;
@@ -253,14 +228,14 @@ st.markdown(
     }
 
     /* ---------------------------------------------------
-       5. ESTILOS DE LA BARRA LATERAL Y SU FONDO
+       4. BARRA LATERAL CON FONDO SÓLIDO (ARREGLADO)
        --------------------------------------------------- */
     section[data-testid="stSidebar"] {
         background-color: #ffffff !important;
         border-right: 1px solid #e5e7eb !important;
         margin-top: 65px !important; 
         height: calc(100vh - 65px) !important;
-        z-index: 999999;
+        z-index: 9999999 !important; /* Sobreponerse a todo al desplegarse */
     }
     
     section[data-testid="stSidebar"] > div {
