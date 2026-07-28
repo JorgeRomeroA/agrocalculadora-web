@@ -148,9 +148,18 @@ st.markdown(
         font-family: 'Inter', sans-serif !important;
     }
 
-    /* Ocultar elementos por defecto de Streamlit */
-    #MainMenu, header, footer {visibility: hidden; display: none;}
+    /* Ocultar elementos por defecto de Streamlit excepto el botón de abrir la sidebar */
+    #MainMenu, footer {
+        visibility: hidden; 
+        display: none;
+    }
     
+    header[data-testid="stHeader"] {
+        background: transparent !important;
+        z-index: 9999999 !important;
+        height: 0px !important;
+    }
+
     /* Margen superior para evitar solapamiento con Navbar */
     .block-container {
         padding-top: 5.5rem !important; 
@@ -165,7 +174,7 @@ st.markdown(
         height: 65px;
         background-color: #ffffff;
         border-bottom: 1px solid #e5e7eb;
-        z-index: 999999;
+        z-index: 99999;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -211,12 +220,25 @@ st.markdown(
     }
 
     /* --- ESTILOS BARRA LATERAL (SIDEBAR) --- */
-    [data-testid="stSidebar"] {
-        background-color: #ffffff;
-        border-right: 1px solid #e5e7eb;
-        padding-top: 2.5rem;
+    section[data-testid="stSidebar"] {
+        background-color: #ffffff !important;
+        border-right: 1px solid #e5e7eb !important;
+        top: 65px !important;
+        height: calc(100vh - 65px) !important;
+        z-index: 999;
     }
     
+    /* Mostrar siempre el botón desplegable por si la sidebar está colapsada */
+    [data-testid="stSidebarCollapsedControl"] {
+        display: flex !important;
+        top: 70px !important;
+        z-index: 1000000 !important;
+        background-color: #ffffff !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 8px !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+    }
+
     [data-testid="stSidebar"] label {
         color: #374151 !important;
         font-weight: 600 !important;
