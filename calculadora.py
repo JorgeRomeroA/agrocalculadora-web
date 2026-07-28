@@ -127,7 +127,8 @@ st.markdown(
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-    html, body, [class*="css"], [class*="st-"], p, h1, h2, h3, h4, h5, span, div, label {
+    /* FUERZA BRUTA PARA LA TIPOGRAFÍA */
+    *, html, body, [class*="css"], [class*="st-"], p, h1, h2, h3, h4, h5, span, div, label, input, select, button {
         font-family: 'Inter', sans-serif !important;
     }
 
@@ -179,7 +180,7 @@ st.markdown(
     }
 
     /* ---------------------------------------------------
-       4. BARRA LATERAL FIJA Y FORZADA
+       4. BARRA LATERAL FIJA Y ESPACIADOS COMPACTOS
        --------------------------------------------------- */
     section[data-testid="stSidebar"] {
         background-color: #ffffff !important;
@@ -199,6 +200,17 @@ st.markdown(
         background-color: #ffffff !important;
     }
 
+    /* REDUCCIÓN DE ESPACIOS (GAPS Y MARGINS) EN LA SIDEBAR */
+    [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
+        gap: 0.4rem !important; /* Estrecha el hueco general entre elementos */
+    }
+    
+    [data-testid="stSidebar"] hr {
+        margin-top: 0.8rem !important;
+        margin-bottom: 0.8rem !important;
+        padding: 0 !important;
+    }
+
     /* ---------------------------------------------------
        5. AJUSTAR EL CONTENIDO PRINCIPAL
        --------------------------------------------------- */
@@ -210,36 +222,34 @@ st.markdown(
     }
 
     /* ---------------------------------------------------
-       6. TIPOGRAFÍA Y ESTILOS DE LA BARRA LATERAL (MEJORADO)
+       6. TIPOGRAFÍA Y ESTILOS DE WIDGETS
        --------------------------------------------------- */
-    
-    /* Títulos dentro de la barra lateral */
     [data-testid="stSidebar"] .stMarkdown h3 {
         color: #111827 !important;
         font-weight: 700 !important;
         font-size: 1.15rem !important;
         letter-spacing: -0.01em !important;
-        margin-bottom: 0.5rem !important;
+        margin-bottom: 0 !important;
+        margin-top: 0 !important;
     }
 
-    /* Etiquetas de los selectores (Labels) */
     [data-testid="stSidebar"] label, 
     [data-testid="stSidebar"] .stWidgetLabel p {
-        color: #4b5563 !important; /* Gris elegante */
+        color: #4b5563 !important; 
         font-weight: 500 !important;
-        font-size: 0.92rem !important;
+        font-size: 0.90rem !important;
+        padding-bottom: 2px !important; /* Acercar la etiqueta al input */
     }
     
-    /* Cajas de texto y selectores */
     .stSelectbox div[data-baseweb="select"], 
     .stNumberInput div[data-baseweb="input"] {
         background-color: #f9fafb !important;
         border: 1px solid #d1d5db !important;
-        border-radius: 8px !important;
+        border-radius: 6px !important; /* Ligeramente menos curvo, más pro */
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif !important;
-        font-size: 0.95rem !important;
+        font-size: 0.92rem !important;
         color: #1f2937 !important;
+        min-height: 38px !important; /* Reducir altura de las cajas */
     }
     
     .stSelectbox div[data-baseweb="select"]:hover, 
@@ -248,19 +258,19 @@ st.markdown(
         box-shadow: 0 0 0 1px #059669 !important;
     }
 
-    /* Botón verde principal */
     .stButton>button {
         background-color: #059669 !important;
         color: white !important;
         border-radius: 8px !important;
         border: none !important;
-        padding: 0.85rem !important;
+        padding: 0.6rem !important;
         font-weight: 700 !important;
-        font-size: 1rem !important;
+        font-size: 0.95rem !important;
         letter-spacing: 0.02em !important;
         width: 100% !important;
         box-shadow: 0 4px 6px -1px rgba(5,150,105,0.2) !important;
         transition: all 0.2s ease !important;
+        margin-top: 0.5rem !important;
     }
     
     .stButton>button:hover {
@@ -269,7 +279,6 @@ st.markdown(
         box-shadow: 0 6px 8px -1px rgba(5,150,105,0.3) !important;
     }
 
-    /* Cajas de métricas del panel principal */
     div[data-testid="stMetric"] {
         background-color: #ffffff;
         border: 1px solid #e5e7eb;
@@ -299,7 +308,6 @@ with st.sidebar:
 
     n_agua = 0.0
     if sistema_sel == "Regadío":
-        st.markdown("<br>", unsafe_allow_html=True)
         ppm_agua = st.number_input(
             "Nitratos en agua (ppm)", min_value=0.0, value=0.0, step=1.0
         )
