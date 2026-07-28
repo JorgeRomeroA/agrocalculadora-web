@@ -99,7 +99,7 @@ st.set_page_config(
     page_title="Agro SaaS",
     page_icon="🌾",
     layout="wide",
-    initial_sidebar_state="expanded", # Forzamos que se inicie expandida
+    initial_sidebar_state="expanded", 
 )
 
 # --- 4. BARRA SUPERIOR (NAVBAR) ---
@@ -132,21 +132,20 @@ st.markdown(
     }
 
     /* ---------------------------------------------------
-       1. ELIMINAR CUALQUIER RASTRO DEL HEADER Y BOTONES DE STREAMLIT
+       1. LIMPIEZA TOTAL
        --------------------------------------------------- */
     #MainMenu, footer, header[data-testid="stHeader"] {
         display: none !important;
         visibility: hidden !important;
     }
     
-    /* Ocultar botones de cerrar/abrir la barra lateral */
     [data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] {
         display: none !important;
         visibility: hidden !important;
     }
 
     /* ---------------------------------------------------
-       2. NUESTRA BARRA PERSONALIZADA (AHORA LIMPIA)
+       2. NUESTRA BARRA PERSONALIZADA
        --------------------------------------------------- */
     .navbar {
         position: fixed;
@@ -160,47 +159,19 @@ st.markdown(
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 2rem; /* Ya no hace falta el hueco de 80px */
+        padding: 0 2rem;
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     
-    .navbar .logo {
-        font-size: 1.3rem;
-        font-weight: 800;
-        color: #111827;
-        letter-spacing: -0.5px;
-    }
-    .navbar .nav-links a {
-        text-decoration: none;
-        color: #6b7280;
-        margin: 0 1rem;
-        font-weight: 500;
-        font-size: 0.95rem;
-        transition: color 0.2s;
-    }
-    .navbar .nav-links a:hover {
-        color: #059669;
-    }
-    .navbar .user-profile {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-weight: 600;
-        color: #374151;
-        cursor: pointer;
-    }
-    .navbar .user-profile img {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-    }
+    .navbar .logo { font-size: 1.3rem; font-weight: 800; color: #111827; letter-spacing: -0.5px; }
+    .navbar .nav-links a { text-decoration: none; color: #6b7280; margin: 0 1rem; font-weight: 500; font-size: 0.95rem; transition: color 0.2s; }
+    .navbar .nav-links a:hover { color: #059669; }
+    .navbar .user-profile { display: flex; align-items: center; gap: 10px; font-weight: 600; color: #374151; cursor: pointer; }
+    .navbar .user-profile img { width: 32px; height: 32px; border-radius: 50%; }
 
-    /* Ajuste para que la app no quede tapada por la barra */
-    .block-container {
-        padding-top: 5.5rem !important; 
-    }
-
-    /* Fondo general del dashboard */
+    /* ---------------------------------------------------
+       3. FONDO GENERAL
+       --------------------------------------------------- */
     .stApp {
         background-color: #f8fafc;
         background-image: radial-gradient(#d1d5db 1px, transparent 1px);
@@ -208,7 +179,7 @@ st.markdown(
     }
 
     /* ---------------------------------------------------
-       3. BARRA LATERAL FIJA Y SIN BOTÓN
+       4. BARRA LATERAL FIJA Y FORZADA (EL TRUCO ANTI-CACHÉ)
        --------------------------------------------------- */
     section[data-testid="stSidebar"] {
         background-color: #ffffff !important;
@@ -216,17 +187,33 @@ st.markdown(
         margin-top: 65px !important; 
         height: calc(100vh - 65px) !important;
         z-index: 999999 !important; 
+        /* Obligamos a que la barra se ancle y sea visible, ignorando el estado oculto de Streamlit */
+        position: fixed !important;
+        left: 0 !important;
+        transform: translateX(0px) !important;
+        visibility: visible !important;
+        width: 320px !important;
+        min-width: 320px !important;
     }
     
     section[data-testid="stSidebar"] > div {
         background-color: #ffffff !important;
     }
 
-    [data-testid="stSidebar"] label {
-        color: #374151 !important;
-        font-weight: 600 !important;
-        font-size: 0.88rem !important;
+    /* ---------------------------------------------------
+       5. AJUSTAR EL CONTENIDO PRINCIPAL
+       --------------------------------------------------- */
+    .block-container {
+        padding-top: 5.5rem !important; 
+        margin-left: 320px !important; /* Desplazamos la app a la derecha para hacerle el hueco a la barra */
+        padding-left: 2rem !important;
+        max-width: calc(100% - 320px) !important; 
     }
+
+    /* ---------------------------------------------------
+       6. ESTILOS DE ELEMENTOS
+       --------------------------------------------------- */
+    [data-testid="stSidebar"] label { color: #374151 !important; font-weight: 600 !important; font-size: 0.88rem !important; }
     
     .stSelectbox div[data-baseweb="select"], 
     .stNumberInput div[data-baseweb="input"] {
@@ -242,7 +229,6 @@ st.markdown(
         box-shadow: 0 0 0 1px #059669 !important;
     }
 
-    /* Botón verde de la Sidebar */
     .stButton>button {
         background-color: #059669 !important;
         color: white !important;
@@ -253,12 +239,12 @@ st.markdown(
         width: 100% !important;
         box-shadow: 0 4px 6px -1px rgba(5,150,105,0.2) !important;
     }
+    
     .stButton>button:hover {
         background-color: #047857 !important;
         transform: translateY(-1px) !important;
     }
 
-    /* Cajas de métricas */
     div[data-testid="stMetric"] {
         background-color: #ffffff;
         border: 1px solid #e5e7eb;
