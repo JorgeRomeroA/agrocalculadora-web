@@ -148,16 +148,16 @@ st.markdown(
         font-family: 'Inter', sans-serif !important;
     }
 
-    /* Ocultar elementos por defecto de Streamlit excepto el botón de abrir la sidebar */
+    /* Ocultar elementos por defecto de Streamlit */
     #MainMenu, footer {
         visibility: hidden; 
         display: none;
     }
     
+    /* Hacemos transparente el header nativo pero lo dejamos por encima para que el botón funcione */
     header[data-testid="stHeader"] {
         background: transparent !important;
-        z-index: 9999999 !important;
-        height: 0px !important;
+        z-index: 999999 !important;
     }
 
     /* Margen superior para evitar solapamiento con Navbar */
@@ -178,9 +178,11 @@ st.markdown(
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 2rem;
+        /* IMPORTANTE: Damos padding izquierdo extra (4.5rem) para evitar solapar el botón nativo de Streamlit */
+        padding: 0 2rem 0 4.5rem;
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
+    
     .navbar .logo {
         font-size: 1.3rem;
         font-weight: 800;
@@ -225,18 +227,7 @@ st.markdown(
         border-right: 1px solid #e5e7eb !important;
         top: 65px !important;
         height: calc(100vh - 65px) !important;
-        z-index: 999;
-    }
-    
-    /* Mostrar siempre el botón desplegable por si la sidebar está colapsada */
-    [data-testid="stSidebarCollapsedControl"] {
-        display: flex !important;
-        top: 70px !important;
-        z-index: 1000000 !important;
-        background-color: #ffffff !important;
-        border: 1px solid #e5e7eb !important;
-        border-radius: 8px !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+        z-index: 999999;
     }
 
     [data-testid="stSidebar"] label {
