@@ -552,4 +552,4 @@ if generar_btn:
 else:
     st.markdown("<br><br><br>", unsafe_allow_html=True)
     st.markdown("<h1 style='text-align: center; color: #111827;'>🚜 Bienvenido a tu Panel Agronómico</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: #6b7280; font-size: 1.1rem;'>Configura los parámetros en el menú lateral para empezar.</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #6b7280; font-size: 1.1rem;'>Configura los parámetros en el menú lateral para empezar.</p>", unsafe_allow_html=True)
